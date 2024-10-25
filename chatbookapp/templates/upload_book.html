@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Book</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        /* Common styles for all inputs */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #1380e6;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1380e6;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload Book</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <!-- Book Name Field -->
+        <div class="form-group">
+            <label for="book_name">Book Name</label>
+            {{ form.book_name }}
+        </div>
+
+        <!-- Author Name Field -->
+        <div class="form-group">
+            <label for="author_name">Author Name</label>
+            {{ form.author_name }}
+        </div>
+
+        <!-- PDF Upload Field -->
+        <div class="form-group">
+            <label for="pdf">Upload PDF</label>
+            {{ form.pdf }}
+        </div>
+
+        <!-- Selling Price Field -->
+        <div class="form-group">
+            <label for="selling_price">Price</label>
+            {{ form.selling_price }}
+        </div>
+
+        <!-- Book Genre Field -->
+        <div class="form-group">
+            <label for="book_genre">Book Genre</label>
+            <select id="book_genre_select" name="book_genre" onchange="toggleOtherGenreInput()">
+                <option value="">Select Genre</option>
+                <option value="Fiction">Fiction</option>
+                <option value="Non-Fiction">Non-Fiction</option>
+                <option value="Mystery">Mystery</option>
+                <option value="Fantasy">Fantasy</option>
+                <option value="Science Fiction">Science Fiction</option>
+                <option value="Biography">Biography</option>
+                <option value="History">History</option>
+                <option value="Math">Math</option>
+                <option value="Science">Science</option>
+                <option value="Physics">Physics</option>
+                <option value="Chemistry">Chemistry</option>
+                <option value="Geography">Geography</option>
+                <option value="Philosophy">Philosophy</option>
+                <option value="Art">Art</option>
+                <option value="Literature">Literature</option>
+                <option value="Technology">Technology</option>
+                <option value="Self-Help">Self-Help</option>
+                <option value="Health">Health</option>
+                <option value="Other">Other (please specify)</option>
+            </select>
+            <input type="text" id="other_genre" name="other_genre" placeholder="Please specify" style="display: none;">
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit">Upload</button>
+    </form>
+
+    <script>
+        function toggleOtherGenreInput() {
+            const select = document.getElementById('book_genre_select');
+            const otherInput = document.getElementById('other_genre');
+            if (select.value === 'Other') {
+                otherInput.style.display = 'block';
+            } else {
+                otherInput.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

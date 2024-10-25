@@ -1,0 +1,325 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BookGPT</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="{% static 'css/style1.css' %}" />
+  </head>
+
+  <body>
+    <div class="dashboard">
+      <button id="toggle-sidebar-button">
+        <i class="fa fa-bars" aria-hidden="true"></i>
+      </button>
+      <aside class="sidebar">
+        <div class="search-container">
+          <input type="text" id="search-input" placeholder="Search..." />
+          <button id="search-button">
+            <i class="fa fa-search" aria-hidden="true"></i>
+          </button>
+        </div>
+        <button id="add-book-button">
+          <i class="fa fa-plus" aria-hidden="true"></i>Add New Book
+        </button>
+        <nav class="menu">
+          {% for book in books %}
+          <ul>
+            <li class="show-content-top">
+              <a href="#">
+                <div class="book-side-main" id="click1">
+                  <div class="img-book-cover">
+                    <img
+                      src="{{ book.image.url }}"
+                      alt="{{ book.book_name }}"
+                      class="img-fluid"
+                    />
+                  </div>
+                  <div class="book-cover-heading">
+                    <h3>{{book.book_name}}</h3>
+                    <h6>{{book.id}}</h6>
+                    
+                    <!-- <p>Writer name</p> -->
+                  </div>
+                </div>
+              </a>
+            </li>
+          </ul>
+          {% endfor %}
+        </nav>
+        <button id="sign-in-button">
+          Sign In<img
+            src="{% static 'images/sign-in.png' %}"
+            class="img-fluid"
+          />
+        </button>
+      </aside>
+      <div class="content">
+        <header>
+          <div class="header-top">
+            <ul id="chatbox-main">
+              <li class="show-content-top">
+                <a href="#">
+                  <div class="book-side-main" id="click1">
+                    {% with books|first as book %}
+                    <div class="img-book-cover">
+                      <img
+                      src="{{ book.image.url }}"
+                      alt="{{ book.book_name }}"
+                      class="img-fluid"
+                    />
+                    </div>
+                    <div class="book-cover-heading">
+                      <h3>{{books|first}}</h3>
+                    </div>
+                    
+                    {% endwith %}
+                  </div>
+                </a>
+              </li>
+            </ul>
+            <select id="language-select">
+              <option value="en">English</option>
+              <option value="es">Spanish</option>
+              <option value="fr">French</option>
+              <option value="de">German</option>
+            </select>
+          </div>
+          <p>{{request.user.first_name}}</p>
+          <a href="{% url 'logout' %}">Logout</a>
+        </header>
+        <main>
+          <div class="chat-window">
+            <div class="messages" id="messages">
+              {% for message in chat_history %}
+              <div class="user">{{ message.user }}</div>
+              <div class="bot">{{ message.assistant }}</div>
+              {% endfor %}
+            </div>
+            <div class="shortcuts">
+              <button
+                class="shortcut-button"
+                data-prompt="Provide a summary of the book"
+              >
+                Provide a summary of the book
+              </button>
+              <button
+                class="shortcut-button"
+                data-prompt="What is this book about?"
+              >
+                What is this book about?
+              </button>
+              <button
+                class="shortcut-button"
+                data-prompt="Give me a brief overview"
+              >
+                Give me a brief overview
+              </button>
+            </div>
+            <form id="chat-form">
+              {% csrf_token %}
+              <input
+                type="text"
+                id="user-input"
+                placeholder="Type your message here..."
+                required
+              />
+              <button type="submit">
+                <img src="{% static 'images/send.png' %}" />
+              </button>
+            </form>
+          </div>
+        </main>
+      </div>
+    </div>
+    <script>
+      document
+        .getElementById("chat-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const userInput = document.getElementById("user-input").value;
+          if (userInput.trim() === "") return;
+          addMessage("user", userInput);
+          document.getElementById("user-input").value = "";
+
+          const eventSource = new EventSource(
+            `chat/?message=${encodeURIComponent(userInput)}`
+          );
+          let botResponse = "";
+
+          eventSource.onmessage = function (event) {
+            botResponse += event.data;
+            updateBotMessage(botResponse);
+          };
+
+          eventSource.onerror = function (error) {
+            eventSource.close();
+            if (botResponse === "") {
+              addMessage(
+                "bot",
+                "Sorry, there was an error processing your request."
+              );
+            }
+          };
+        });
+
+      document
+        .getElementById("search-button")
+        .addEventListener("click", function () {
+          const searchInput = document.getElementById("search-input").value;
+          alert(
+            "Search feature not implemented yet. You searched for: " +
+              searchInput
+          );
+        });
+
+      document.querySelectorAll(".shortcut-button").forEach((button) => {
+        button.addEventListener("click", function () {
+          const prompt = this.getAttribute("data-prompt");
+          document.getElementById("user-input").value = prompt;
+          document.getElementById("user-input").focus();
+        });
+      });
+
+      document
+        .getElementById("add-book-button")
+        .addEventListener("click", function () {
+          const newBookTitle = prompt("Enter the new book title:");
+          if (newBookTitle) {
+            const newBook = document.createElement("li");
+            const newLink = document.createElement("a");
+            newLink.href = "#";
+            newLink.setAttribute("data-title", newBookTitle);
+            newLink.textContent = newBookTitle;
+            newBook.appendChild(newLink);
+            document.querySelector(".menu ul").appendChild(newBook);
+
+            newLink.addEventListener("click", function (event) {
+              event.preventDefault();
+              const title = this.getAttribute("data-title");
+              document.getElementById("header-title").textContent = title;
+            });
+          }
+        });
+
+      document
+        .getElementById("sign-in-button")
+        .addEventListener("click", function () {
+          alert("Sign-In feature not implemented yet.");
+        });
+
+      document
+        .getElementById("language-select")
+        .addEventListener("change", function () {
+          const selectedLanguage = this.value;
+          alert("Language changed to: " + selectedLanguage);
+        });
+
+      function addMessage(sender, message) {
+        const messageContainer = document.createElement("div");
+        messageContainer.classList.add(sender);
+        messageContainer.textContent = message;
+
+        const messages = document.getElementById("messages");
+        messages.appendChild(messageContainer);
+        messages.scrollTop = messages.scrollHeight;
+      }
+
+      function updateBotMessage(message) {
+        const messages = document.getElementById("messages");
+        let botMessage = messages.querySelector(".bot:last-child");
+
+        if (!botMessage) {
+          botMessage = document.createElement("div");
+          botMessage.classList.add("bot");
+          messages.appendChild(botMessage);
+        }
+
+        botMessage.textContent = message;
+        messages.scrollTop = messages.scrollHeight;
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        var showContentTopItems = document.querySelectorAll(
+          ".sidebar .show-content-top"
+        );
+        var chatboxMain = document.getElementById("chatbox-main");
+
+        showContentTopItems.forEach(function (item) {
+          item.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            // Get the book name from the data attribute
+            var bookName = this.querySelector(
+              ".book-cover-heading h3"
+            ).textContent;
+            console.log(bookName);
+            // Clone the clicked li element
+            var clickedLi = item.cloneNode(true);
+
+            // Clear the chatbox-main
+            chatboxMain.innerHTML = "";
+
+            // Append the cloned li to chatbox-main
+            chatboxMain.appendChild(clickedLi);
+
+            // Send the book name to the backend
+            fetch("/askpdf/select-book/", {
+              // Note the added 'askpdf/' prefix
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken"),
+              },
+              body: JSON.stringify({ book: bookName }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                console.log("Success:", data);
+                // Handle the response
+              })
+              .catch((error) => {
+                console.error("Error:", error);
+              });
+          });
+        });
+      });
+
+      // Function to get CSRF token
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          const cookies = document.cookie.split(";");
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(
+                cookie.substring(name.length + 1)
+              );
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        var sidebar = document.querySelector(".sidebar");
+        var toggleButton = document.getElementById("toggle-sidebar-button");
+
+        toggleButton.addEventListener("click", function () {
+          sidebar.classList.toggle("active");
+        });
+      });
+    </script>
+  </body>
+</html>
