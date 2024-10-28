@@ -64,20 +64,20 @@ def download_stopwords(request):
         return JsonResponse({'status': 'Error downloading stopwords.', 'error': str(e)})        
 #############################    
         
-from functools import wraps
+# from functools import wraps
 
-def skip_ngrok_warning(view_func):
-    @wraps(view_func)
-    def wrapped_view(request, *args, **kwargs):
-        response = view_func(request, *args, **kwargs)
-        response['ngrok-skip-browser-warning'] = 'true'
-        return response
-    return wrapped_view
+# def skip_ngrok_warning(view_func):
+#     @wraps(view_func)
+#     def wrapped_view(request, *args, **kwargs):
+#         response = view_func(request, *args, **kwargs)
+#         response['ngrok-skip-browser-warning'] = 'true'
+#         return response
+#     return wrapped_view
 
 
 ##############################
 
-@skip_ngrok_warning
+# @skip_ngrok_warning
 @api_view(['GET'])
 # @authentication_classes([JWTAuthentication])
 # @permission_classes([IsAuthenticated])
