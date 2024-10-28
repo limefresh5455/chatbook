@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import status
 from django.http import StreamingHttpResponse
 from django.core.cache import cache
-from .search import BookAssistant
+
 from chatbookapp.models import *
 from .upload_pdfs import process_pdf, handle_uploaded_file
 import json
@@ -50,8 +50,8 @@ from botocore.exceptions import ClientError
 
 import boto3
 from django.conf import settings
-assistant = BookAssistant()
-processor = PDFProcessor()
+
+
         
         
 #################################
@@ -452,7 +452,7 @@ class BookAuthorView(APIView):
 class ChatView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-
+    
     def get_profile(self, user):
         """Helper method to fetch user profile."""
         try:
@@ -506,6 +506,7 @@ class ChatView(APIView):
         return json.dumps(chat_history)
 
     def event_stream(self, user_input, image_path, page_no, book_name, language, chat_history):
+        assistant = BookAssistant()
         """Helper method to stream the response from the assistant."""
         response = ""
         for chunk in assistant.query(user_input, image_path, page_no, book_name, language, chat_history):
@@ -716,77 +717,78 @@ def delete_book_api(request, book_id):
 
 ####################################################
 
-@api_view(['POST'])
-@authentication_classes([JWTAuthentication])
-@permission_classes([IsAuthenticated])
-def select_book(request):
-    try:
-        # Explicitly fetching the Profile by user ID
-        profile = Profile.objects.get(id=request.user.id)
-        print("USERNMAE",profile.username)
-        user_id = str(profile.user_id)
-    except Profile.DoesNotExist:
-        return Response({
-            'status': 'error',
-            'profile': 'User profile not found'
-        }, status=status.HTTP_404_NOT_FOUND)
+# @api_view(['POST'])
+# @authentication_classes([JWTAuthentication])
+# @permission_classes([IsAuthenticated])
+# def select_book(request):
+#     try:
+#         # Explicitly fetching the Profile by user ID
+#         profile = Profile.objects.get(id=request.user.id)
+#         print("USERNMAE",profile.username)
+#         user_id = str(profile.user_id)
+#     except Profile.DoesNotExist:
+#         return Response({
+#             'status': 'error',
+#             'profile': 'User profile not found'
+#         }, status=status.HTTP_404_NOT_FOUND)
 
-    session_id = request.session.get('chat_session_id')
-    book_name = request.data.get('book')
+#     session_id = request.session.get('chat_session_id')
+#     book_name = request.data.get('book')
 
-    if not book_name:
-        return Response({
-            'status': 'error',
-            'book': 'Book name is required'
-        }, status=status.HTTP_400_BAD_REQUEST)
+#     if not book_name:
+#         return Response({
+#             'status': 'error',
+#             'book': 'Book name is required'
+#         }, status=status.HTTP_400_BAD_REQUEST)
 
-    try:
-        book = Book.objects.get(book_name=book_name)
-        book_id = book.uuid
-        assistant.set_current_book(user_id, session_id, book_name)
-        return Response({
-            'status': 'success',
-            'book_id': str(book_id),
-            'book': f'Book "{book_name}" selected successfully'
-        })
-    except Book.DoesNotExist:
-        return Response({
-            'status': 'error',
-            'book': f'Book "{book_name}" not found'
-        }, status=status.HTTP_404_NOT_FOUND)
+#     try:
+#         book = Book.objects.get(book_name=book_name)
+#         book_id = book.uuid
+#         assistant.set_current_book(user_id, session_id, book_name)
+#         return Response({
+#             'status': 'success',
+#             'book_id': str(book_id),
+#             'book': f'Book "{book_name}" selected successfully'
+#         })
+#     except Book.DoesNotExist:
+#         return Response({
+#             'status': 'error',
+#             'book': f'Book "{book_name}" not found'
+#         }, status=status.HTTP_404_NOT_FOUND)
         
 ##############################        
-@api_view(['POST'])
-@authentication_classes([JWTAuthentication])
-@permission_classes([IsAuthenticated])
-def select_language(request):
-    try:
-        # Explicitly fetching the Profile by user ID
-        profile = Profile.objects.get(id=request.user.id)
-        # profile = request.user
-        print("USERNMAE",profile.username)
-        user_id = str(profile.user_id)
-    except Profile.DoesNotExist:
-        return Response({
-            'status': 'error',
-            'profile': 'User profile not found'
-        }, status=status.HTTP_404_NOT_FOUND)
+# @api_view(['POST'])
+# @authentication_classes([JWTAuthentication])
+# @permission_classes([IsAuthenticated])
+# def select_language(request):
+#     assistant = BookAssistant()
+#     try:
+#         # Explicitly fetching the Profile by user ID
+#         profile = Profile.objects.get(id=request.user.id)
+#         # profile = request.user
+#         print("USERNMAE",profile.username)
+#         user_id = str(profile.user_id)
+#     except Profile.DoesNotExist:
+#         return Response({
+#             'status': 'error',
+#             'profile': 'User profile not found'
+#         }, status=status.HTTP_404_NOT_FOUND)
 
-    session_id = request.session.get('chat_session_id')
-    language = request.data.get('language')
+#     session_id = request.session.get('chat_session_id')
+#     language = request.data.get('language')
 
-    if not language:
-        return Response({
-            'status': 'error',
-            'language': 'Language is required'
-        }, status=status.HTTP_400_BAD_REQUEST)
+#     if not language:
+#         return Response({
+#             'status': 'error',
+#             'language': 'Language is required'
+#         }, status=status.HTTP_400_BAD_REQUEST)
 
-    assistant.set_current_language(user_id, session_id, language)
-    return Response({
-        'status': 'success',
-        'language': language,
-        'message': f'"{language}" selected successfully'
-    })
+#     assistant.set_current_language(user_id, session_id, language)
+#     return Response({
+#         'status': 'success',
+#         'language': language,
+#         'message': f'"{language}" selected successfully'
+#     })
 
 
 #########   #####################
@@ -911,6 +913,7 @@ def is_admin(user):
 @login_required(redirect_field_name="")
 @user_passes_test(is_admin)
 def upload_file_function(request):
+    processor = PDFProcessor()
     if request.method == 'POST':
         form = BookForm(request.POST, request.FILES)
         if form.is_valid():

@@ -32,7 +32,9 @@ SECRET_KEY = 'django-insecure-s%uawd@gv7xyr_zz)rp)=l2e0z0u4xo&oylntud1#9-#v$b%s1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['18.212.21.87']
+# ALLOWED_HOSTS = ['18.212.21.87']
+ALLOWED_HOSTS = ['18.212.21.87', 'localhost', '127.0.0.1']
+
 
 
 # Application definition
@@ -71,65 +73,65 @@ MIDDLEWARE = [
 ]
 
 
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-    "http://192.168.1.43:3000",
-    "https://ae84-122-168-85-208.ngrok-free.app"
-]
-CORS_ALLOW_HEADERS = [
-    'content-type',
-    'x-csrftoken',
-    'Authorization',
-    # add other headers as needed
-]
-CORS_ALLOWED_ORIGINS = [ 
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-    "http://127.0.0.1:3000",
-    "http://localhost:3000",
-    "https://3c4e-122-168-94-216.ngrok-free.app",
-   "http://192.168.1.43:3000",
-   "http://192.168.1.26:3000"
-]
+# CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_CREDENTIALS = True
+# CSRF_TRUSTED_ORIGINS = [
+#     "http://localhost:3000",
+#     "http://192.168.1.43:3000",
+#     "https://ae84-122-168-85-208.ngrok-free.app"
+# ]
+# CORS_ALLOW_HEADERS = [
+#     'content-type',
+#     'x-csrftoken',
+#     'Authorization',
+#     # add other headers as needed
+# ]
+# CORS_ALLOWED_ORIGINS = [ 
+#     "http://localhost:8000",
+#     "http://127.0.0.1:8000",
+#     "http://127.0.0.1:3000",
+#     "http://localhost:3000",
+#     "https://3c4e-122-168-94-216.ngrok-free.app",
+#    "http://192.168.1.43:3000",
+#    "http://192.168.1.26:3000"
+# ]
 
 
-CORS_ORIGIN_ALLOW_ALL = False
-CSRF_COOKIE_NAME = "csrftoken"
-CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
-CSRF_USE_SESSIONS = False
-# CORS_ORIGIN_WHITELIST = ("http://localhost:3000")
+# CORS_ORIGIN_ALLOW_ALL = False
+# CSRF_COOKIE_NAME = "csrftoken"
+# CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
+# CSRF_USE_SESSIONS = False
+# # CORS_ORIGIN_WHITELIST = ("http://localhost:3000")
 
-CORS_ORIGIN_WHITELIST = [
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-    "http://127.0.0.1:3000",
-    "http://localhost:3000","http://192.168.1.43:3000","http://192.168.1.26:3000"
-]
+# CORS_ORIGIN_WHITELIST = [
+#     "http://localhost:8000",
+#     "http://127.0.0.1:8000",
+#     "http://127.0.0.1:3000",
+#     "http://localhost:3000","http://192.168.1.43:3000","http://192.168.1.26:3000"
+# ]
 
 
-CORS_ALLOW_METHODS = [
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
-]
+# CORS_ALLOW_METHODS = [
+#     "DELETE",
+#     "GET",
+#     "OPTIONS",
+#     "PATCH",
+#     "POST",
+#     "PUT",
+# ]
 
-CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'x-csrf-token',
-    'x-requested-with',
-    'ngrok-skip-browser-warning',  # Add this header here
-]
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_HEADERS = [
+#     'accept',
+#     'accept-encoding',
+#     'authorization',
+#     'content-type',
+#     'dnt',
+#     'x-csrf-token',
+#     'x-requested-with',
+#     'ngrok-skip-browser-warning',  # Add this header here
+# ]
+# CORS_ALLOW_ALL_ORIGINS = True
 
 
 ROOT_URLCONF = 'chatbook.urls'
