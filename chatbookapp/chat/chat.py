@@ -85,31 +85,7 @@ def index(request):
     # Fetch all books
     books = Book.objects.all()
 
-    if request.user.is_authenticated:
-        print(request.user.id)
-        profile = request.user.id
-        # Fetch user's subscriptions (for LEARNER and EXAMINER plans)
-        user_subscriptions = Subscription.objects.filter(profile=profile, plan_type__in=["LEARNER", "EXAMINER"])
-        
-        # Create a set of book IDs from the user's subscriptions
-        subscribed_book_ids = set(sub.book.id for sub in user_subscriptions)
-        
-        # Exclude books the user is subscribed to
-        book_details = [
-            {
-                "uuid": book.uuid,
-                "id": book.id,
-                'name': book.book_name,
-                'auther_name': book.author_name,
-                'image': book.image.url if book.image else None,
-                'pdf': book.pdf.url if book.pdf else None,
-                'book_genre': book.book_genre
-            } for book in books if book.id not in subscribed_book_ids
-        ]
-        print("HELLO")
-    else:
-        # If the user is not authenticated, show all books
-        book_details = [
+    book_details = [
             {
                 "uuid": book.uuid,
                 "id": book.id,
@@ -119,7 +95,7 @@ def index(request):
                 'pdf': book.pdf.url if book.pdf else None
             } for book in books
         ]
-        print("BOOOKK")
+    print("BOOOKK")
     return Response({
         'books': book_details,
     })
