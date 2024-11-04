@@ -103,7 +103,7 @@ admin.site.register(SigninWithGoogle, SigninWithGoogleAdmin)
 
 
 admin.site.register(OTP, OTPAdmin)
-admin.site.register(ChatMessage)
+# admin.site.register(ChatMessage)
 
 
     
